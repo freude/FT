@@ -1,2 +1,2 @@
 # FT
-Continious Fourier transform of a discrete function
+Continuous Fourier transform of a discrete function
