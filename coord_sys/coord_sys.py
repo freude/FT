@@ -2,58 +2,40 @@
 
 import numpy as np
 import myconst as MyConst
+from sys import stdout
 
 
 class CoordSys(object):
 
-    def __init__(self, num_cell, array_sizes, units='au'):
+    def __init__(self, **kw):
+
+        self.num_cells = kw.get('num_cells', 10)
+        self.array_sizes = kw.get('array_sizes', 8)
+        units = kw.get('units', 'au')
 
         if units == 'au':
-            self.lattice_const=0.5431*1e-9/MyConst.ab;
-        else
-            self.lattice_const=0.5431*1e-9;
+            self.lattice_const = MyConst.a_Si/MyConst.ab
+        else:
+            self.lattice_const = MyConst.a_Si
 
-        self.num_cells = num_cells;
-        self.arrays_sizes = arrays_sizes;
-        self.coord_sizes = obj.num_cells*obj.arrays_sizes;
-        dist=self.num_cells*obj.lattice_const;
-        self.coord_stps=dist/self.coord_sizes;
-        self.origin_inds=self.arrays_sizes*(self.origin_cells-1)+1;
-        self.coord_limits(1)=-self.origin_inds(1)*self.coord_stps+self.coord_stps;
-        self.coord_limits(2)=-self.origin_inds(1)*self.coord_stps+self.num_cells*self.lattice_const;
+        self.coord_sizes = self.num_cells*self.array_sizes+1
+
+        self.length = self.num_cells*self.lattice_const
+
+        self.coord_stps=self.length/(self.coord_sizes-1)
+
+        self.origin_cells = self.num_cells/2
+        self.origin_inds=self.array_sizes*(self.origin_cells-1)+1;
+        self.coord_limits = [-self.origin_cells*self.lattice_const,\
+                             (self.num_cells-self.origin_cells)*self.lattice_const]
 
     #----------------------------------------------------------------------
 
     def set_origin_cells(self, origin_cells):
-            self.origin_cells = origin_cells;
-            self.origin_inds=self.arrays_sizes*(self.origin_cells-1)+1;
-            self.coord_limits(1)=-self.origin_inds(1)*self.coord_stps+self.coord_stps;
-            self.coord_limits(2)=-self.origin_inds(1)*self.coord_stps+self.num_cells*self.lattice_const;
-        end
+        self.origin_cells = self.num_cells/2
+        self.origin_inds=self.array_sizes*(self.origin_cells-1)+1;
+        self.coord_limits = [-self.origin_cells*self.lattice_const,\
+                             (self.num_cells-self.origin_cells+1)*self.lattice_const]
 
-        [kx ,ky ,kz] = global_basis_rec(obj,j1,j2,j3)
-        [x ,y ,z] = global_basis(obj,j1,j2,j3)
-
-        function [x ,y ,z] = global_basis_array(obj,X,Y,Z)
-            [x ,y ,z] = arrayfun(@obj.global_basis,X,Y,Z);
-        end;
-
-        function [x ,y ,z] = global_basis_rec_array(obj,X,Y,Z)
-            [x ,y ,z] = arrayfun(@obj.global_basis_rec,X,Y,Z);
-        end;
-
-        function [x ,y ,z] = global_coords_gen(obj)
-            x=1:obj.coord_sizes;
-            [X,Y,Z]=meshgrid(x,x,x);
-            [x ,y ,z] = arrayfun(@obj.global_basis,X,Y,Z);
-        end;
-
-        function [x ,y ,z] = global_coords_rec_gen(obj)
-            x=1:obj.coord_sizes;
-            [X,Y,Z]=meshgrid(x,x,x);
-            [x ,y ,z] = arrayfun(@obj.global_basis_rec,X,Y,Z);
-        end;
-
-        function x = x(obj)
-            x = obj.coord_limits(1):obj.coord_stps:obj.coord_limits(2);
-        end;
+    def x(self):
+        return np.linspace(self.coord_limits[0],self.coord_limits[1],self.coord_sizes, endpoint = True)
