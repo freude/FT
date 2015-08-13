@@ -2,7 +2,6 @@
 
 import numpy as np
 import myconst as MyConst
-from sys import stdout
 
 
 class CoordSys(object):
@@ -18,24 +17,25 @@ class CoordSys(object):
         else:
             self.lattice_const = MyConst.a_Si
 
-        self.coord_sizes = self.num_cells*self.array_sizes+1
+        self.coord_sizes = self.num_cells*self.array_sizes
 
         self.length = self.num_cells*self.lattice_const
 
-        self.coord_stps=self.length/(self.coord_sizes-1)
+        self.coord_stps = self.length/self.coord_sizes
 
         self.origin_cells = self.num_cells/2
-        self.origin_inds=self.array_sizes*(self.origin_cells-1)+1;
-        self.coord_limits = [-self.origin_cells*self.lattice_const,\
+        self.origin_inds = self.array_sizes*(self.origin_cells-1)+1
+        self.coord_limits = [-self.origin_cells*self.lattice_const,
                              (self.num_cells-self.origin_cells)*self.lattice_const]
 
-    #----------------------------------------------------------------------
+    # ----------------------------------------------------------------------
 
     def set_origin_cells(self, origin_cells):
         self.origin_cells = self.num_cells/2
-        self.origin_inds=self.array_sizes*(self.origin_cells-1)+1;
-        self.coord_limits = [-self.origin_cells*self.lattice_const,\
+        self.origin_inds = self.array_sizes*(self.origin_cells-1)+1
+        self.coord_limits = [-self.origin_cells*self.lattice_const,
                              (self.num_cells-self.origin_cells+1)*self.lattice_const]
 
     def x(self):
-        return np.linspace(self.coord_limits[0],self.coord_limits[1],self.coord_sizes, endpoint = True)
+        return np.linspace(self.coord_limits[0], self.coord_limits[1],
+                           self.coord_sizes, endpoint = False)
